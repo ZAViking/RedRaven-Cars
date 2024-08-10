@@ -1,3 +1,2 @@
 - Add features:
-  - Way to pull just the class identifier
   - Simple guide on key handling sections
