@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Database Search</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f0f0f0;
+                margin: 0;
+                padding: 20px;
+            }
+    
+            .container {
+                max-width: 600px;
+                margin: auto;
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+    
+            h1 {
+                text-align: center;
+                color: #333;
+            }
+    
+            input[type="text"] {
+                width: calc(100% - 20px);
+                padding: 10px;
+                margin-bottom: 20px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                font-size: 16px;
+            }
+    
+            .result {
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                background-color: #e0f7fa;
+                color: #00796b;
+                font-weight: bold;
+                cursor: pointer;
+                margin-bottom: 5px;
+            }
+    
+            .result:hover {
+                background-color: #b2ebf2;
+            }
+    
+            .car-details {
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                background-color: #fff3e0;
+                color: #d84315;
+                font-weight: bold;
+                margin-top: 20px;
+            }
+        </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Search for a Car</h1>
+        <input type="text" id="searchInput" placeholder="Enter car name...">
+        <div id="result"></div>
+        <div id="carDetails" class="car-details" style="display: none;"></div>
+    </div>
+    
+
+<script>
+    // Directly embedding the JSON as a JavaScript object
+    const carDatabase = {
+    "Compacts": {
+        "classIdentifier": "VC_COMPACT",
+        "maxSpeed": 190,
+        "vehicle": [
+            "Honda Civic", "Toyota Corolla", "Ford Focus", "Mazda 3", "Hyundai Elantra",
+            "Volkswagen Golf", "Chevrolet Cruze", "Nissan Sentra", "Kia Forte", "Subaru Impreza",
+            "Honda Fit", "Toyota Yaris", "Ford Fiesta", "Mazda 2", "Hyundai Accent",
+            "Volkswagen Polo", "Chevrolet Sonic", "Nissan Versa", "Kia Rio", "Mini Cooper",
+            "Honda Insight", "Toyota Prius C", "Ford EcoSport", "Mazda CX-3", "Hyundai Veloster",
+            "Volkswagen Jetta", "Chevrolet Spark", "Nissan Micra", "Kia Soul", "Subaru XV Crosstrek",
+            "Honda HR-V", "Toyota Auris", "Ford Ka", "Mazda Demio", "Hyundai i20",
+            "Volkswagen Up!", "Chevrolet Aveo", "Nissan Juke", "Kia Picanto", "Mini Clubman",
+            "Honda Jazz", "Toyota Vios", "Ford Puma", "Mazda CX-30", "Hyundai i30",
+            "Volkswagen T-Cross", "Chevrolet Trax", "Nissan Note", "Kia Stonic", "Subaru Justy",
+            "Honda CR-Z", "Toyota Echo", "Ford B-Max", "Mazda Axela", "Hyundai Getz",
+            "Volkswagen Beetle", "Chevrolet Optra", "Nissan Almera", "Kia Ceed", "Subaru BRZ",
+            "Honda Stream", "Toyota Starlet", "Ford Aspire", "Mazda Protegé", "Hyundai Matrix",
+            "Volkswagen Passat", "Chevrolet Cobalt", "Nissan Cube", "Kia Spectra", "Mini Paceman",
+            "Honda Accord", "Toyota Camry", "Ford Mondeo", "Mazda Familia", "Hyundai Scoupe",
+            "Volkswagen Scirocco", "Chevrolet Monza", "Nissan Sunny", "Kia Sephia", "Subaru Leone",
+            "Honda Prelude", "Toyota Tercel", "Ford Tempo", "Mazda Capella", "Hyundai Excel",
+            "Volkswagen Corrado", "Chevrolet Nova", "Nissan Pulsar", "Kia Mentor", "Mini Countryman",
+            "Honda CR-X", "Toyota Matrix", "Ford Telstar", "Mazda 626", "Hyundai Stellar",
+            "Volkswagen Santana", "Chevrolet Cavalier", "Nissan Stanza", "Kia Carens", "Subaru Legacy",
+            "Honda Odyssey", "Toyota Avensis", "Ford Maverick", "Mazda Tribute", "Hyundai Santa Fe",
+            "Volkswagen Bora", "Chevrolet Lumina", "Nissan Bluebird", "Kia Seltos", "Mini Convertible",
+            "Honda Crosstour", "Toyota Crown", "Ford C-Max", "Mazda CX-5", "Hyundai Tucson",
+            "Volkswagen Touran", "Chevrolet Malibu", "Nissan Silvia", "Kia Sorento", "Subaru Forester",
+            "Honda Element", "Toyota MR2", "Ford Escape", "Mazda RX-8", "Hyundai Genesis Coupe",
+            "Volkswagen Tiguan", "Chevrolet Orlando", "Nissan Pathfinder", "Kia Telluride", "Mini Roadster",
+            "Honda Passport", "Toyota Supra", "Ford Fusion", "Mazda Miata", "Hyundai Sonata",
+            "Volkswagen Arteon", "Chevrolet Impala", "Nissan 370Z", "Kia Stinger", "Subaru WRX",
+            "Honda S2000", "Toyota Celica", "Ford Thunderbird", "Mazda MX-5", "Hyundai Azera",
+            "Volkswagen Touareg", "Chevrolet Camaro", "Nissan GT-R", "Kia Optima", "Subaru Tribeca",
+            "Honda NSX", "Toyota Chaser", "Ford Mustang", "Mazda RX-7", "Hyundai Veloster N",
+            "Volkswagen Phaeton", "Chevrolet Corvette", "Nissan 240SX", "Kia Cadenza", "Mini Hatch",
+            "Honda Integra", "Toyota Crown Majesta", "Ford Capri", "Mazda Millenia", "Hyundai Tiburon",
+            "Volkswagen Passat CC", "Chevrolet SSR", "Nissan Maxima", "Kia Amanti", "Subaru SVX",
+            "Honda Civic Type R", "Toyota 86", "Ford GT", "Mazda Atenza", "Hyundai Genesis",
+            "Volkswagen CC", "Chevrolet HHR", "Nissan Z", "Kia Borrego", "Subaru BRAT",
+            "Honda Prelude Si", "Toyota C-HR", "Ford Ka+", "Mazda Biante", "Hyundai i40",
+            "Volkswagen ID.3", "Chevrolet Caprice", "Nissan Rogue", "Kia Niro", "Mini Coupe",
+            "Honda Fit Shuttle", "Toyota Porte", "Ford Fiesta ST", "Mazda Premacy", "Hyundai i10",
+            "Volkswagen T-Roc", "Chevrolet SS", "Nissan X-Trail", "Kia Rondo", "Subaru Exiga",
+            "Honda Stepwgn", "Toyota Raum", "Ford EcoSport Titanium", "Mazda Verisa", "Hyundai Ioniq",
+            "Volkswagen ID.4", "Chevrolet Trailblazer", "Nissan Juke Nismo", "Kia Carnival", "Subaru Levorg"
+        ]
+    },
+    "Sedans": {
+        "classIdentifier": "VC_SEDAN",
+        "maxSpeed": 210,
+        "vehicle": [
+            "Toyota Camry", "Honda Accord", "Ford Fusion", "Chevrolet Malibu", "Nissan Altima",
+            "Hyundai Sonata", "Kia Optima", "Mazda 6", "Volkswagen Passat", "Subaru Legacy",
+            "BMW 3 Series", "Mercedes-Benz C-Class", "Audi A4", "Lexus ES", "Infiniti Q50",
+            "Acura TLX", "Volvo S60", "Jaguar XE", "Genesis G70", "Buick Regal",
+            "Chrysler 300", "Dodge Charger", "Toyota Avalon", "Honda Civic", "Ford Taurus",
+            "Chevrolet Impala", "Nissan Maxima", "Hyundai Elantra", "Kia Stinger", "Mazda 3",
+            "Volkswagen Jetta", "Subaru WRX", "BMW 5 Series", "Mercedes-Benz E-Class", "Audi A6",
+            "Lexus GS", "Infiniti Q70", "Acura RLX", "Volvo S90", "Jaguar XF",
+            "Genesis G80", "Buick LaCrosse", "Chrysler 200", "Toyota Corolla", "Honda Insight",
+            "Ford Focus", "Chevrolet Cruze", "Nissan Sentra", "Hyundai Accent", "Kia Rio",
+            "Mazda 2", "Volkswagen Golf", "Subaru Impreza", "BMW 7 Series", "Mercedes-Benz S-Class",
+            "Audi A8", "Lexus LS", "Infiniti Q45", "Acura Legend", "Volvo S80",
+            "Jaguar XJ", "Genesis G90", "Buick Park Avenue", "Chrysler LHS", "Toyota Crown",
+            "Honda Legend", "Ford Granada", "Chevrolet Caprice", "Nissan Laurel", "Hyundai Aslan",
+            "Kia K900", "Mazda Millenia", "Volkswagen Phaeton", "Subaru SVX", "BMW M3",
+            "Mercedes-Benz AMG GT", "Audi S4", "Lexus IS", "Infiniti G37", "Acura Integra",
+            "Volvo 850", "Jaguar Mark II", "Genesis Coupe", "Buick Century", "Chrysler Sebring",
+            "Toyota Mark X", "Honda Clarity", "Ford Contour", "Chevrolet Cavalier", "Nissan Bluebird",
+            "Hyundai XG350", "Kia Sephia", "Mazda Xedos 6", "Volkswagen CC", "Subaru BRZ",
+            "BMW i3", "Mercedes-Benz CLA", "Audi A3", "Lexus CT", "Infiniti Q30",
+            "Acura ILX", "Volvo V40", "Jaguar X-Type", "Genesis G70", "Buick Verano",
+            "Chrysler PT Cruiser", "Toyota Prius", "Honda Fit", "Ford Ka", "Chevrolet Spark",
+            "Nissan Micra", "Hyundai Getz", "Kia Picanto", "Mazda Demio", "Volkswagen Polo",
+            "Subaru Justy", "BMW X1", "Mercedes-Benz GLA", "Audi Q3", "Lexus UX",
+            "Infiniti QX30", "Acura MDX", "Volvo XC40", "Jaguar E-Pace", "Genesis GV70",
+            "Buick Encore", "Chrysler Pacifica", "Toyota Venza", "Honda HR-V", "Ford Edge",
+            "Chevrolet Equinox", "Nissan Murano", "Hyundai Tucson", "Kia Seltos", "Mazda CX-5",
+            "Volkswagen Tiguan", "Subaru Forester", "BMW X3", "Mercedes-Benz GLC", "Audi Q5",
+            "Lexus NX", "Infiniti QX50", "Acura RDX", "Volvo XC60", "Jaguar F-Pace",
+            "Genesis GV80", "Buick Enclave", "Chrysler Aspen", "Toyota Highlander", "Honda Pilot",
+            "Ford Explorer", "Chevrolet Traverse", "Nissan Pathfinder", "Hyundai Palisade", "Kia Sorento",
+            "Mazda CX-9", "Volkswagen Atlas", "Subaru Ascent", "BMW X5", "Mercedes-Benz GLE",
+            "Audi Q7", "Lexus RX", "Infiniti QX60", "Acura MDX", "Volvo XC90",
+            "Jaguar F-Type", "Genesis G90", "Buick LeSabre", "Chrysler Imperial", "Toyota Century",
+            "Honda Accord Crosstour", "Ford Crown Victoria", "Chevrolet Lumina", "Nissan Cedric", "Hyundai Grandeur",
+            "Kia Amanti", "Mazda Xedos 9", "Volkswagen Santana", "Subaru Tribeca", "BMW 8 Series",
+            "Mercedes-Benz CLS", "Audi A7", "Lexus LC", "Infiniti Q60", "Acura NSX",
+            "Volvo C70", "Jaguar XK", "Genesis G80", "Buick Reatta", "Chrysler Crossfire"
+        ]
+    },
+    "Suv": {
+        "classIdentifier": "VC_SUV",
+        "maxSpeed": 230,
+        "vehicle": [
+            "Toyota RAV4", "Honda CR-V", "Ford Escape", "Chevrolet Equinox", "Nissan Rogue",
+            "Hyundai Santa Fe", "Kia Sorento", "Mazda CX-5", "Volkswagen Tiguan", "Subaru Forester",
+            "BMW X3", "Mercedes-Benz GLC", "Audi Q5", "Lexus NX", "Infiniti QX50",
+            "Acura RDX", "Volvo XC60", "Jaguar F-Pace", "Genesis GV70", "Buick Enclave",
+            "Chrysler Aspen", "Toyota Highlander", "Honda Pilot", "Ford Explorer", "Chevrolet Traverse",
+            "Nissan Pathfinder", "Hyundai Palisade", "Kia Telluride", "Mazda CX-9", "Volkswagen Atlas",
+            "Subaru Ascent", "BMW X5", "Mercedes-Benz GLE", "Audi Q7", "Lexus RX",
+            "Infiniti QX60", "Acura MDX", "Volvo XC90", "Jaguar E-Pace", "Genesis GV80",
+            "Buick Encore", "Chrysler Pacifica", "Toyota 4Runner", "Honda Passport", "Ford Edge",
+            "Chevrolet Blazer", "Nissan Murano", "Hyundai Tucson", "Kia Seltos", "Mazda CX-30",
+            "Volkswagen T-Cross", "Subaru Crosstrek", "BMW X1", "Mercedes-Benz GLA", "Audi Q3",
+            "Lexus UX", "Infiniti QX30", "Acura CDX", "Volvo XC40", "Jaguar E-Pace",
+            "Genesis GV60", "Buick Encore GX", "Chrysler Voyager", "Toyota Venza", "Honda HR-V",
+            "Ford Bronco", "Chevrolet Trax", "Nissan Juke", "Hyundai Kona", "Kia Niro",
+            "Mazda CX-3", "Volkswagen Taos", "Subaru XV", "BMW X4", "Mercedes-Benz GLC Coupe",
+            "Audi Q5 Sportback", "Lexus RX L", "Infiniti QX55", "Acura ZDX", "Volvo C40 Recharge",
+            "Jaguar I-PACE", "Genesis GV80 Coupe", "Buick Envision", "Chrysler Crossfire", "Toyota Land Cruiser",
+            "Honda Element", "Ford Expedition", "Chevrolet Tahoe", "Nissan Armada", "Hyundai Veracruz",
+            "Kia Mohave", "Mazda CX-7", "Volkswagen Touareg", "Subaru Baja", "BMW X6",
+            "Mercedes-Benz GLE Coupe", "Audi Q8", "Lexus GX", "Infiniti QX80", "Acura SLX",
+            "Volvo XC70", "Jaguar F-Pace SVR", "Genesis GV90", "Buick Rainier", "Chrysler Pacifica Hybrid",
+            "Toyota Sequoia", "Honda Crosstour", "Ford Flex", "Chevrolet Suburban", "Nissan Xterra",
+            "Hyundai Palisade Calligraphy", "Kia Soul EV", "Mazda CX-50", "Volkswagen ID.4", "Subaru Outback",
+            "BMW X7", "Mercedes-Benz GLS", "Audi SQ7", "Lexus LX", "Infiniti QX70",
+            "Acura RDX PMC Edition", "Volvo V90 Cross Country", "Jaguar E-Type SUV", "Genesis GV60 Performance", "Buick Regal TourX",
+            "Chrysler PT Cruiser", "Toyota FJ Cruiser", "Honda CR-V Hybrid", "Ford Bronco Sport", "Chevrolet Captiva",
+            "Nissan Qashqai", "Hyundai Santa Fe Hybrid", "Kia Sportage", "Mazda MX-30", "Volkswagen Atlas Cross Sport",
+            "Subaru WRX STI", "BMW X2", "Mercedes-Benz GLB", "Audi SQ5", "Lexus RX 350",
+            "Infiniti FX35", "Acura MDX Sport Hybrid", "Volvo XC60 Recharge", "Jaguar F-Pace SVAutobiography", "Genesis GV60 Electric",
+            "Buick Cascada", "Chrysler Town & Country", "Toyota RAV4 Prime", "Honda Passport Elite", "Ford Maverick",
+            "Chevrolet TrailBlazer", "Nissan Kicks", "Hyundai Santa Cruz", "Kia Carnival", "Mazda CX-90",
+            "Volkswagen CrossPolo", "Subaru Solterra", "BMW iX", "Mercedes-Benz EQC", "Audi e-tron",
+            "Lexus RX 450h", "Infiniti QX60 Monograph", "Acura RDX A-Spec", "Volvo XC40 Recharge", "Jaguar I-PACE EV320",
+            "Genesis GV80 Prestige", "Buick Enclave Avenir", "Chrysler 300C", "Toyota 4Runner TRD Pro", "Honda Ridgeline",
+            "Ford F-150 Raptor", "Chevrolet Silverado", "Nissan Frontier", "Hyundai Santa Fe Calligraphy", "Kia Sorento Hybrid",
+            "Mazda Tribute", "Volkswagen Amarok", "Subaru Forester Wilderness", "BMW X8", "Mercedes-Benz G-Class",
+            "Audi Q2", "Lexus NX 300h", "Infiniti QX50 Sensory", "Acura CDX Sport Hybrid", "Volvo XC90 Inscription",
+            "Jaguar XJ SUV", "Genesis G90 SUV", "Buick Riviera", "Chrysler New Yorker", "Toyota Yaris Cross"
+        ]
+    },
+    "Coupe": {
+        "classIdentifier": "VC_COUPE",
+        "maxSpeed": 250,
+        "vehicle": []
+    },
+    "Muscle": {
+        "classIdentifier": "VC_MUSCLE",
+        "maxSpeed": 260,
+        "vehicle": []
+    },
+    "Sportclassic": {
+        "classIdentifier": "VC_SPORT_CLASSIC",
+        "maxSpeed": 280,
+        "vehicle": []
+    },
+    "Sport": {
+        "classIdentifier": "VC_SPORT",
+        "maxSpeed": 300,
+        "vehicle": []
+    },
+    "Super": {
+        "classIdentifier": "VC_SUPER",
+        "maxSpeed": 320,
+        "vehicle": []
+    },
+    "Motorcycle": {
+        "classIdentifier": "VC_MOTORCYCLE",
+        "maxSpeed": 300,
+        "vehicle": []
+    },
+    "Off-Road": {
+        "classIdentifier": "VC_OFF_ROAD",
+        "maxSpeed": 240,
+        "vehicle": []
+    },
+    "Industrial": {
+        "classIdentifier": "VC_INDUSTRIAL",
+        "maxSpeed": 140,
+        "vehicle": []
+    },
+    "Utility": {
+        "classIdentifier": "VC_UTILITY",
+        "maxSpeed": 140,
+        "vehicle": []
+    },
+    "Van": {
+        "classIdentifier": "VC_VAN",
+        "maxSpeed": 220,
+        "vehicle": []
+    },
+    "Cycle": {
+        "classIdentifier": "VC_CYCLE",
+        "maxSpeed": 100,
+        "vehicle": []
+    },
+    "Boat": {
+        "classIdentifier": "VC_BOAT",
+        "maxSpeed": 260,
+        "vehicle": []
+    },
+    "Helicopter": {
+        "classIdentifier": "VC_HELICOPTER",
+        "maxSpeed": 210,
+        "vehicle": []
+    },
+    "Plane": {
+        "classIdentifier": "VC_PLANE",
+        "maxSpeed": 210,
+        "vehicle": []
+    },
+    "Service": {
+        "classIdentifier": "VC_SERVICE",
+        "maxSpeed": 210,
+        "vehicle": []
+    },
+    "Emergency": {
+        "classIdentifier": "VC_EMERGENCY",
+        "maxSpeed": 210,
+        "vehicle": []
+    },
+    "Military": {
+        "classIdentifier": "VC_MILITARY",
+        "maxSpeed": 210,
+        "vehicle": []
+    },
+    "Commercial": {
+        "classIdentifier": "VC_COMMERCIAL",
+        "maxSpeed": "Dont Use",
+        "vehicle": "Dont Use"
+    },
+    "Trains": {
+        "classIdentifier": "VC_RAIL",
+        "maxSpeed": "Dont Use",
+        "vehicle": "Dont Use"
+    },
+    };
+
+    document.getElementById('searchInput').addEventListener('input', function() {
+        const query = this.value.toLowerCase();
+        const resultDiv = document.getElementById('result');
+        let found = false;
+
+        // Clear previous result
+        resultDiv.innerHTML = '';
+
+        // Search in each category
+        for (const category in carDatabase) {
+            const vehicle = carDatabase[category]["vehicle"];
+            const maxSpeed = carDatabase[category]["maxSpeed"];
+            const classIdentifier = carDatabase[category]["classIdentifier"];
+
+            vehicle.forEach(carName => {
+                if (carName.toLowerCase().includes(query)) {
+                    const carResult = document.createElement('div');
+                    carResult.className = 'result';
+                    carResult.textContent = `${carName} (${classIdentifier}, Max Speed: ${maxSpeed} km/h)`;
+                    carResult.addEventListener('click', function() {
+                        displayCarDetails(carName, category, classIdentifier, maxSpeed);
+                    });
+                    resultDiv.appendChild(carResult);
+                    found = true;
+                }
+            });
+        }
+
+        if (!found && query) {
+            resultDiv.innerHTML = '<div class="no-result">No vehicle found</div>';
+        }
+    });
+
+    function displayCarDetails(carName, category, classIdentifier, maxSpeed) {
+        const carDetailsDiv = document.getElementById('carDetails');
+        carDetailsDiv.style.display = 'block';
+        carDetailsDiv.innerHTML = `
+            <h2>Car Details</h2>
+            <p><strong>Car Name:</strong> ${carName}</p>
+            <p><strong>Category:</strong> ${category}</p>
+            <p><strong>Class Identifier:</strong> ${classIdentifier}</p>
+            <p><strong>Max Speed:</strong> ${maxSpeed} km/h</p>
+        `;
+    }
+</script>
+
+</body>
+</html>
