@@ -1,72 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Car Database Search</title>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                background-color: #f0f0f0;
-                margin: 0;
-                padding: 20px;
-            }
-    
-            .container {
-                max-width: 600px;
-                margin: auto;
-                background-color: #fff;
-                padding: 20px;
-                border-radius: 8px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            }
-    
-            h1 {
-                text-align: center;
-                color: #333;
-            }
-    
-            input[type="text"] {
-                width: calc(100% - 20px);
-                padding: 10px;
-                margin-bottom: 20px;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-                font-size: 16px;
-            }
-    
-            .result {
-                padding: 10px;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-                background-color: #e0f7fa;
-                color: #00796b;
-                font-weight: bold;
-                cursor: pointer;
-                margin-bottom: 5px;
-            }
-    
-            .result:hover {
-                background-color: #b2ebf2;
-            }
-    
-            .car-details {
-                padding: 10px;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-                background-color: #fff3e0;
-                color: #d84315;
-                font-weight: bold;
-                margin-top: 20px;
-            }
-        </style>
+    <title>Car and Category Search</title>
+    <style>
+        /* Reset default styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Body styling */
+        body {
+            background-color: #f4f4f4;
+            color: #333;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        /* Header styling */
+        header {
+            background-color: #444;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        header h1 {
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        /* Navigation styling */
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #333;
+            padding: 10px 0;
+        }
+
+        nav .tab {
+            cursor: pointer;
+            padding: 10px 20px;
+            margin: 0 5px;
+            background-color: #555;
+            color: #fff;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        nav .tab.active {
+            background-color: #888;
+        }
+
+        nav .tab:hover {
+            background-color: #666;
+        }
+
+        /* Main content styling */
+        main {
+            padding: 20px;
+            max-width: 900px;
+            margin: 20px auto;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .results {
+            margin-bottom: 20px;
+        }
+
+        .result {
+            padding: 10px;
+            background-color: #f9f9f9;
+            margin-bottom: 10px;
+            border-left: 5px solid #444;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .result:hover {
+            background-color: #e6e6e6;
+            cursor: pointer;
+        }
+
+        .details {
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border-left: 5px solid #444;
+        }
+
+        .details h2 {
+            margin-bottom: 10px;
+        }
+
+        .details p {
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+
+        /* Footer styling */
+        footer {
+            background-color: #444;
+            color: #fff;
+            text-align: center;
+            padding: 15px 0;
+            margin-top: 20px;
+            font-size: 0.9em;
+            border-top: 1px solid #333;
+        }
+
+        /* Hide tab content by default */
+        .tab-content {
+            display: none;
+        }
+
+        /* Show active tab content */
+        .tab-content.active {
+            display: block;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Search for a Car</h1>
-        <input type="text" id="searchInput" placeholder="Enter car name...">
-        <div id="result"></div>
-        <div id="carDetails" class="car-details" style="display: none;"></div>
-    </div>
+    <header>
+        <h1>Car and Category Search</h1>
+    </header>
+
+    <nav>
+        <div class="tab active" data-tab="vehiclesTab">Search Vehicles</div>
+        <div class="tab" data-tab="categoriesTab">Search Categories</div>
+    </nav>
+
+    <main>
+        <div id="vehiclesTab" class="tab-content active">
+            <input type="text" id="vehicleSearchInput" class="search-input" placeholder="Enter vehicle name...">
+            <div id="vehicleResult" class="results"></div>
+            <div id="vehicleDetails" class="details" style="display: none;"></div>
+        </div>
+
+        <div id="categoriesTab" class="tab-content">
+            <input type="text" id="categorySearchInput" class="search-input" placeholder="Enter class identifier...">
+            <div id="categoryResult" class="results"></div>
+            <div id="categoryDetails" class="details" style="display: none;"></div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Car and Category Search. All rights reserved.</p>
+    </footer>
     
 
 <script>
@@ -697,51 +792,116 @@
         },
     };
 
-    document.getElementById('searchInput').addEventListener('input', function() {
-        const query = this.value.toLowerCase();
-        const resultDiv = document.getElementById('result');
-        let found = false;
+        // Tab functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
 
-        // Clear previous result
-        resultDiv.innerHTML = '';
-
-        // Search in each category
-        for (const category in carDatabase) {
-            const vehicle = carDatabase[category]["vehicle"];
-            const maxSpeed = carDatabase[category]["maxSpeed"];
-            const classIdentifier = carDatabase[category]["classIdentifier"];
-
-            vehicle.forEach(carName => {
-                if (carName.toLowerCase().includes(query)) {
-                    const carResult = document.createElement('div');
-                    carResult.className = 'result';
-                    carResult.textContent = `${carName} (${classIdentifier}, Max Speed: ${maxSpeed} km/h)`;
-                    carResult.addEventListener('click', function() {
-                        displayCarDetails(carName, category, classIdentifier, maxSpeed);
-                    });
-                    resultDiv.appendChild(carResult);
-                    found = true;
-                }
+                this.classList.add('active');
+                document.getElementById(this.getAttribute('data-tab')).classList.add('active');
             });
+        });
+
+        // Vehicle search function
+        document.getElementById('vehicleSearchInput').addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            const resultDiv = document.getElementById('vehicleResult');
+            const detailsDiv = document.getElementById('vehicleDetails');
+            let found = false;
+            const displayedVehicles = {};
+
+            resultDiv.innerHTML = '';
+            detailsDiv.style.display = 'none';
+
+            for (const category in carDatabase) {
+                const vehicles = carDatabase[category]["vehicle"];
+                const maxSpeed = carDatabase[category]["maxSpeed"];
+                const classIdentifier = carDatabase[category]["classIdentifier"];
+
+                if (Array.isArray(vehicles)) {
+                    vehicles.forEach(vehicleName => {
+                        if (vehicleName.toLowerCase().includes(query)) {
+                            if (!displayedVehicles[vehicleName] || maxSpeed > displayedVehicles[vehicleName].maxSpeed) {
+                                displayedVehicles[vehicleName] = {
+                                    category,
+                                    classIdentifier,
+                                    maxSpeed
+                                };
+                            }
+                            found = true;
+                        }
+                    });
+                }
+            }
+
+            for (const vehicleName in displayedVehicles) {
+                const { category, classIdentifier, maxSpeed } = displayedVehicles[vehicleName];
+                const vehicleResult = document.createElement('div');
+                vehicleResult.className = 'result vehicle-result';
+                vehicleResult.textContent = `${vehicleName} (${classIdentifier}, Max Speed: ${maxSpeed} km/h)`;
+                vehicleResult.addEventListener('click', function() {
+                    displayVehicleDetails(vehicleName, category, classIdentifier, maxSpeed);
+                });
+                resultDiv.appendChild(vehicleResult);
+            }
+
+            if (!found && query) {
+                resultDiv.innerHTML = '<div class="no-result">No vehicles found</div>';
+            }
+        });
+
+        function displayVehicleDetails(vehicleName, category, classIdentifier, maxSpeed) {
+            const detailsDiv = document.getElementById('vehicleDetails');
+            detailsDiv.style.display = 'block';
+            detailsDiv.innerHTML = `
+                <h2>Vehicle Details</h2>
+                <p><strong>Vehicle Name:</strong> ${vehicleName}</p>
+                <p><strong>Category:</strong> ${category}</p>
+                <p><strong>Class Identifier:</strong> ${classIdentifier}</p>
+                <p><strong>Max Speed:</strong> ${maxSpeed} km/h</p>
+            `;
         }
 
-        if (!found && query) {
-            resultDiv.innerHTML = '<div class="no-result">No vehicle found</div>';
+        // Category search function using class identifier
+        document.getElementById('categorySearchInput').addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            const resultDiv = document.getElementById('categoryResult');
+            const detailsDiv = document.getElementById('categoryDetails');
+            resultDiv.innerHTML = '';
+            detailsDiv.style.display = 'none';
+
+            // Loop through categories to find matching class identifier
+            for (const category in carDatabase) {
+                const classIdentifier = carDatabase[category]["classIdentifier"].toLowerCase();
+                if (classIdentifier.includes(query)) {
+                    const categoryResult = document.createElement('div');
+                    categoryResult.className = 'result category-result';
+                    categoryResult.textContent = `Category: ${category} (Class: ${classIdentifier}, Max Speed: ${carDatabase[category].maxSpeed} km/h)`;
+                    categoryResult.addEventListener('click', function() {
+                        displayCategoryDetails(category);
+                    });
+                    resultDiv.appendChild(categoryResult);
+                    break; // Stop after finding the first match
+                }
+            }
+
+            if (!resultDiv.innerHTML && query) {
+                resultDiv.innerHTML = '<div class="no-result">No categories found</div>';
+            }
+        });
+
+        function displayCategoryDetails(categoryName) {
+            const category = carDatabase[categoryName];
+            const detailsDiv = document.getElementById('categoryDetails');
+            detailsDiv.style.display = 'block';
+            detailsDiv.innerHTML = `
+                <h2>Category Details</h2>
+                <p><strong>Category:</strong> ${categoryName}</p>
+                <p><strong>Class Identifier:</strong> ${category.classIdentifier}</p>
+                <p><strong>Max Speed:</strong> ${category.maxSpeed} km/h</p>
+            `;
         }
-    });
-
-    function displayCarDetails(carName, category, classIdentifier, maxSpeed) {
-        const carDetailsDiv = document.getElementById('carDetails');
-        carDetailsDiv.style.display = 'block';
-        carDetailsDiv.innerHTML = `
-            <h2>Car Details</h2>
-            <p><strong>Car Name:</strong> ${carName}</p>
-            <p><strong>Category:</strong> ${category}</p>
-            <p><strong>Class Identifier:</strong> ${classIdentifier}</p>
-            <p><strong>Max Speed:</strong> ${maxSpeed} km/h</p>
-        `;
-    }
-</script>
-
+    </script>
 </body>
 </html>
