@@ -133,6 +133,86 @@
         .tab-content.active {
             display: block;
         }
+
+        /* Handling Issues styling */
+        .handling-options {
+            list-style: none;
+            margin: 20px 0;
+            padding: 0;
+        }
+
+        .handling-options li {
+            margin-bottom: 10px;
+        }
+
+        .handling-options label {
+            font-weight: bold;
+        }
+
+        .submit-btn {
+            padding: 10px 20px;
+            background-color: #444;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background-color: #666;
+        }
+
+                /* Modal styling */
+                .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
@@ -143,6 +223,7 @@
     <nav>
         <div class="tab active" data-tab="vehiclesTab">Search Vehicles</div>
         <div class="tab" data-tab="categoriesTab">Search Categories</div>
+        <div class="tab" data-tab="handlingTab">Handling Issues</div>
     </nav>
 
     <main>
@@ -157,11 +238,67 @@
             <div id="categoryResult" class="results"></div>
             <div id="categoryDetails" class="details" style="display: none;"></div>
         </div>
+
+        <div id="handlingTab" class="tab-content">
+            <h2>Select Handling Issues</h2>
+            <ul class="handling-options">
+                <li>
+                    <label><input type="checkbox" id="issueBrakes" value="brakes"> Does not brake well</label>
+                </li>
+                <li>
+                    <label><input type="checkbox" id="issueRolls" value="rolls"> Car rolls often</label>
+                </li>
+                <li>
+                    <label><input type="checkbox" id="issueSpeed" value="speed"> Slow to speed</label>
+                </li>
+                <li>
+                    <label><input type="checkbox" id="issueOversteer" value="oversteer"> Oversteers</label>
+                </li>
+                <li>
+                    <label><input type="checkbox" id="issueUndersteer" value="understeer"> Understeers</label>
+                </li>
+                <li>
+                    <label><input type="checkbox" id="issueBounces" value="bounces"> Bounces on bumps</label>
+                </li>
+                <li>
+                    <label><input type="checkbox" id="issueStiff" value="stiff"> Feels too stiff</label>
+                </li>
+                <li>
+                    <label><input type="checkbox" id="issueSpinsOut" value="spinsOut"> Spins out easily</label>
+                </li>
+                <li>
+                    <label><input type="checkbox" id="issueBodyRoll" value="bodyRoll"> Too much body roll</label>
+                </li>
+                <li>
+                    <label><input type="checkbox" id="issueLongStop" value="longStop"> Takes too long to stop</label>
+                </li>
+                <li>
+                    <label><input type="checkbox" id="issueLightCar" value="lightCar"> Car feels too light</label>
+                </li>
+                <li>
+                    <label><input type="checkbox" id="issueSlowAcceleration" value="slowAcceleration"> Slow to accelerate</label>
+                </li>
+                <li>
+                    <label><input type="checkbox" id="issueTopSpeed" value="topSpeed"> Not enough top speed</label>
+                </li>
+                <!-- Add more issues as needed -->
+            </ul>
+            <button class="submit-btn" onclick="handleIssues()">Submit</button>
+        </div>
     </main>
 
     <footer>
         <p>&copy; 2024 Car and Category Search. All rights reserved.</p>
     </footer>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Suggested Handling Adjustments</h2>
+            <div id="modalText"></div>
+        </div>
+    </div>
     
 
 <script>
@@ -792,116 +929,173 @@
         },
     };
 
-        // Tab functionality
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+    // Tab functionality
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
 
-                this.classList.add('active');
-                document.getElementById(this.getAttribute('data-tab')).classList.add('active');
-            });
+            this.classList.add('active');
+            document.getElementById(this.getAttribute('data-tab')).classList.add('active');
         });
+    });
 
-        // Vehicle search function
-        document.getElementById('vehicleSearchInput').addEventListener('input', function() {
-            const query = this.value.toLowerCase();
-            const resultDiv = document.getElementById('vehicleResult');
-            const detailsDiv = document.getElementById('vehicleDetails');
-            let found = false;
-            const displayedVehicles = {};
+    // Handling issues function with modal
+    function handleIssues() {
+        let issues = [];
+        if (document.getElementById('issueBrakes').checked) {
+            issues.push("Brakes not working well: Consider increasing the `brakeForce` value in the handling file.");
+        }
+        if (document.getElementById('issueRolls').checked) {
+            issues.push("Car rolls often: Adjust the `fRollCentreHeight` and `fSuspensionBiasFront` values.");
+        }
+        if (document.getElementById('issueSpeed').checked) {
+            issues.push("Slow to speed: Increase the `fInitialDriveForce` and `fDriveInertia` values.");
+        }
+        if (document.getElementById('issueOversteer').checked) {
+            issues.push("Oversteers: Consider decreasing the `fTractionBiasFront` value and increasing the `fTractionCurveMin` value to reduce oversteer.");
+        }
+        if (document.getElementById('issueUndersteer').checked) {
+            issues.push("Understeers: Consider increasing the `fTractionBiasFront` value and decreasing the `fTractionCurveMin` value to improve steering response.");
+        }
+        if (document.getElementById('issueBounces').checked) {
+            issues.push("Bounces on bumps: Try decreasing the `fSuspensionReboundDamp` value to make the suspension less bouncy.");
+        }
+        if (document.getElementById('issueStiff').checked) {
+            issues.push("Feels too stiff: Consider lowering the `fSuspensionCompDamp` and `fSuspensionReboundDamp` values to soften the suspension.");
+        }
+        if (document.getElementById('issueSpinsOut').checked) {
+            issues.push("Spins out easily: Try increasing the `fTractionCurveMax` and `fLowSpeedTractionLossMult` values to improve grip and stability.");
+        }
+        if (document.getElementById('issueBodyRoll').checked) {
+            issues.push("Too much body roll: Decrease the `fSuspensionUpperLimit` and `fSuspensionLowerLimit` values to reduce body roll during cornering.");
+        }
+        if (document.getElementById('issueLongStop').checked) {
+            issues.push("Takes too long to stop: Increase the `fBrakeBiasFront` and `fBrakeForce` values to improve braking efficiency.");
+        }
+        if (document.getElementById('issueLightCar').checked) {
+            issues.push("Car feels too light: Increase the `fMass` and `fDownforceModifier` values to give the car more weight and stability.");
+        }
+        if (document.getElementById('issueSlowAcceleration').checked) {
+            issues.push("Slow to accelerate: Increase the `fInitialDriveForce` and adjust the `fClutchChangeRateScaleUpShift` to improve acceleration.");
+        }
+        if (document.getElementById('issueTopSpeed').checked) {
+            issues.push("Not enough top speed: Increase the `fInitialDriveMaxFlatVel` and adjust the `fDriveInertia` for a higher top speed.");
+        }
 
-            resultDiv.innerHTML = '';
-            detailsDiv.style.display = 'none';
+        if (issues.length > 0) {
+            document.getElementById('modalText').innerHTML = issues.join("<br><br>");
+            document.getElementById('myModal').style.display = "flex";
+        } else {
+            document.getElementById('modalText').innerHTML = "Please select at least one issue.";
+            document.getElementById('myModal').style.display = "flex";
+        }
+    }
 
-            for (const category in carDatabase) {
-                const vehicles = carDatabase[category]["vehicle"];
-                const maxSpeed = carDatabase[category]["maxSpeed"];
-                const classIdentifier = carDatabase[category]["classIdentifier"];
+    // Close the modal
+    function closeModal() {
+        document.getElementById('myModal').style.display = "none";
+    }  
 
-                if (Array.isArray(vehicles)) {
-                    vehicles.forEach(vehicleName => {
-                        if (vehicleName.toLowerCase().includes(query)) {
-                            if (!displayedVehicles[vehicleName] || maxSpeed > displayedVehicles[vehicleName].maxSpeed) {
-                                displayedVehicles[vehicleName] = {
-                                    category,
-                                    classIdentifier,
-                                    maxSpeed
-                                };
-                            }
-                            found = true;
+    // Vehicle search function
+    document.getElementById('vehicleSearchInput').addEventListener('input', function() {
+        const query = this.value.toLowerCase();
+        const resultDiv = document.getElementById('vehicleResult');
+        const detailsDiv = document.getElementById('vehicleDetails');
+        let found = false;
+        const displayedVehicles = {};
+
+        resultDiv.innerHTML = '';
+        detailsDiv.style.display = 'none';
+
+        for (const category in carDatabase) {
+            const vehicles = carDatabase[category]["vehicle"];
+            const maxSpeed = carDatabase[category]["maxSpeed"];
+            const classIdentifier = carDatabase[category]["classIdentifier"];
+
+            if (Array.isArray(vehicles)) {
+                vehicles.forEach(vehicleName => {
+                    if (vehicleName.toLowerCase().includes(query)) {
+                        if (!displayedVehicles[vehicleName] || maxSpeed > displayedVehicles[vehicleName].maxSpeed) {
+                            displayedVehicles[vehicleName] = {
+                                category,
+                                classIdentifier,
+                                maxSpeed
+                            };
                         }
-                    });
-                }
-            }
-
-            for (const vehicleName in displayedVehicles) {
-                const { category, classIdentifier, maxSpeed } = displayedVehicles[vehicleName];
-                const vehicleResult = document.createElement('div');
-                vehicleResult.className = 'result vehicle-result';
-                vehicleResult.textContent = `${vehicleName} (${classIdentifier}, Max Speed: ${maxSpeed} km/h)`;
-                vehicleResult.addEventListener('click', function() {
-                    displayVehicleDetails(vehicleName, category, classIdentifier, maxSpeed);
+                        found = true;
+                    }
                 });
-                resultDiv.appendChild(vehicleResult);
             }
-
-            if (!found && query) {
-                resultDiv.innerHTML = '<div class="no-result">No vehicles found</div>';
-            }
-        });
-
-        function displayVehicleDetails(vehicleName, category, classIdentifier, maxSpeed) {
-            const detailsDiv = document.getElementById('vehicleDetails');
-            detailsDiv.style.display = 'block';
-            detailsDiv.innerHTML = `
-                <h2>Vehicle Details</h2>
-                <p><strong>Vehicle Name:</strong> ${vehicleName}</p>
-                <p><strong>Category:</strong> ${category}</p>
-                <p><strong>Class Identifier:</strong> ${classIdentifier}</p>
-                <p><strong>Max Speed:</strong> ${maxSpeed} km/h</p>
-            `;
         }
 
-        // Category search function using class identifier
-        document.getElementById('categorySearchInput').addEventListener('input', function() {
-            const query = this.value.toLowerCase();
-            const resultDiv = document.getElementById('categoryResult');
-            const detailsDiv = document.getElementById('categoryDetails');
-            resultDiv.innerHTML = '';
-            detailsDiv.style.display = 'none';
-
-            // Loop through categories to find matching class identifier
-            for (const category in carDatabase) {
-                const classIdentifier = carDatabase[category]["classIdentifier"].toLowerCase();
-                if (classIdentifier.includes(query)) {
-                    const categoryResult = document.createElement('div');
-                    categoryResult.className = 'result category-result';
-                    categoryResult.textContent = `Category: ${category} (Class: ${classIdentifier}, Max Speed: ${carDatabase[category].maxSpeed} km/h)`;
-                    categoryResult.addEventListener('click', function() {
-                        displayCategoryDetails(category);
-                    });
-                    resultDiv.appendChild(categoryResult);
-                    break; // Stop after finding the first match
-                }
-            }
-
-            if (!resultDiv.innerHTML && query) {
-                resultDiv.innerHTML = '<div class="no-result">No categories found</div>';
-            }
-        });
-
-        function displayCategoryDetails(categoryName) {
-            const category = carDatabase[categoryName];
-            const detailsDiv = document.getElementById('categoryDetails');
-            detailsDiv.style.display = 'block';
-            detailsDiv.innerHTML = `
-                <h2>Category Details</h2>
-                <p><strong>Category:</strong> ${categoryName}</p>
-                <p><strong>Class Identifier:</strong> ${category.classIdentifier}</p>
-                <p><strong>Max Speed:</strong> ${category.maxSpeed} km/h</p>
-            `;
+        for (const vehicleName in displayedVehicles) {
+            const { category, classIdentifier, maxSpeed } = displayedVehicles[vehicleName];
+            const vehicleResult = document.createElement('div');
+            vehicleResult.className = 'result vehicle-result';
+            vehicleResult.textContent = `${vehicleName} (${classIdentifier}, Max Speed: ${maxSpeed} km/h)`;
+            vehicleResult.addEventListener('click', function() {
+                displayVehicleDetails(vehicleName, category, classIdentifier, maxSpeed);
+            });
+            resultDiv.appendChild(vehicleResult);
         }
+
+        if (!found && query) {
+            resultDiv.innerHTML = '<div class="no-result">No vehicles found</div>';
+        }
+    });
+
+    function displayVehicleDetails(vehicleName, category, classIdentifier, maxSpeed) {
+        const detailsDiv = document.getElementById('vehicleDetails');
+        detailsDiv.style.display = 'block';
+        detailsDiv.innerHTML = `
+            <h2>Vehicle Details</h2>
+            <p><strong>Vehicle Name:</strong> ${vehicleName}</p>
+            <p><strong>Category:</strong> ${category}</p>
+            <p><strong>Class Identifier:</strong> ${classIdentifier}</p>
+            <p><strong>Max Speed:</strong> ${maxSpeed} km/h</p>
+        `;
+    }
+
+    // Category search function using class identifier
+    document.getElementById('categorySearchInput').addEventListener('input', function() {
+        const query = this.value.toLowerCase();
+        const resultDiv = document.getElementById('categoryResult');
+        const detailsDiv = document.getElementById('categoryDetails');
+        resultDiv.innerHTML = '';
+        detailsDiv.style.display = 'none';
+
+        // Loop through categories to find matching class identifier
+        for (const category in carDatabase) {
+            const classIdentifier = carDatabase[category]["classIdentifier"].toLowerCase();
+            if (classIdentifier.includes(query)) {
+                const categoryResult = document.createElement('div');
+                categoryResult.className = 'result category-result';
+                categoryResult.textContent = `Category: ${category} (Class: ${classIdentifier}, Max Speed: ${carDatabase[category].maxSpeed} km/h)`;
+                categoryResult.addEventListener('click', function() {
+                    displayCategoryDetails(category);
+                });
+                resultDiv.appendChild(categoryResult);
+                break; // Stop after finding the first match
+            }
+        }
+
+        if (!resultDiv.innerHTML && query) {
+            resultDiv.innerHTML = '<div class="no-result">No categories found</div>';
+        }
+    });
+
+    function displayCategoryDetails(categoryName) {
+        const category = carDatabase[categoryName];
+        const detailsDiv = document.getElementById('categoryDetails');
+        detailsDiv.style.display = 'block';
+        detailsDiv.innerHTML = `
+            <h2>Category Details</h2>
+            <p><strong>Category:</strong> ${categoryName}</p>
+            <p><strong>Class Identifier:</strong> ${category.classIdentifier}</p>
+            <p><strong>Max Speed:</strong> ${category.maxSpeed} km/h</p>
+        `;
+    }
     </script>
 </body>
 </html>
