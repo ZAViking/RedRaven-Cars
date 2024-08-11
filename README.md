@@ -1,2 +1,0 @@
-- Add features:
-  - Simple guide on key handling sections
