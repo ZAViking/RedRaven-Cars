@@ -70,13 +70,34 @@
             border-radius: 8px;
         }
 
+        .search-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
         .search-input {
             width: 100%;
             padding: 10px;
-            margin-bottom: 20px;
+            padding-right: 40px; /* Space for the X icon */
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 1em;
+        }
+
+        .reset-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2em;
+            color: #aaa;
+            cursor: pointer;
+            visibility: hidden;
+        }
+
+        .search-input:focus + .reset-icon,
+        .search-input:not(:placeholder-shown) + .reset-icon {
+            visibility: visible;
         }
 
         .results {
@@ -163,8 +184,8 @@
             background-color: #666;
         }
 
-                /* Modal styling */
-                .modal {
+        /* Modal styling */
+        .modal {
             display: none;
             position: fixed;
             z-index: 1000;
@@ -180,38 +201,27 @@
 
         .modal-content {
             background-color: #fff;
+            margin: auto;
             padding: 20px;
-            border-radius: 5px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-header h2 {
-            margin: 0;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         .close {
             color: #aaa;
+            float: right;
             font-size: 28px;
             font-weight: bold;
-            cursor: pointer;
         }
 
         .close:hover,
         .close:focus {
             color: black;
-        }
-
-        .modal-body {
-            margin-bottom: 20px;
+            text-decoration: none;
+            cursor: pointer;
         }
 
         /* iFrame styling */
@@ -245,13 +255,19 @@
 
     <main>
         <div id="vehiclesTab" class="tab-content active">
-            <input type="text" id="vehicleSearchInput" class="search-input" placeholder="Enter vehicle name...">
+            <div class="search-container">
+                <input type="text" id="vehicleSearchInput" class="search-input" placeholder="Enter vehicle name...">
+                <span class="reset-icon" onclick="resetSearch('vehicleSearchInput', 'vehicleResult', 'vehicleDetails')">&times;</span>
+            </div>
             <div id="vehicleResult" class="results"></div>
             <div id="vehicleDetails" class="details" style="display: none;"></div>
         </div>
 
         <div id="categoriesTab" class="tab-content">
-            <input type="text" id="categorySearchInput" class="search-input" placeholder="Enter class identifier...">
+            <div class="search-container">
+                <input type="text" id="categorySearchInput" class="search-input" placeholder="Enter class identifier...">
+                <span class="reset-icon" onclick="resetSearch('categorySearchInput', 'categoryResult', 'categoryDetails')">&times;</span>
+            </div>
             <div id="categoryResult" class="results"></div>
             <div id="categoryDetails" class="details" style="display: none;"></div>
         </div>
@@ -324,8 +340,6 @@
             <div id="modalText"></div>
         </div>
     </div>
-
-
 
 <script>
     // Directly embedding the JSON as a JavaScript object
@@ -955,9 +969,15 @@
         },
     };
 
-    // Tab functionality
+    // ------------------------------------------------ Tabs shit starts here ------------------------------------------------ 
+    // Tab switching functionality with immediate reset
     document.querySelectorAll('.tab').forEach(tab => {
         tab.addEventListener('click', function() {
+            // Clear the search bar and results immediately before switching tabs
+            resetSearch('vehicleSearchInput', 'vehicleResult', 'vehicleDetails');
+            resetSearch('categorySearchInput', 'categoryResult', 'categoryDetails');
+
+            // Now proceed with tab switching
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
 
@@ -966,6 +986,15 @@
         });
     });
 
+    // Reset search function linked to the "X" button
+    function resetSearch(inputId, resultId, detailsId) {
+        document.getElementById(inputId).value = ''; // Clear the search input
+        document.getElementById(resultId).innerHTML = ''; // Clear the result container
+        document.getElementById(detailsId).style.display = 'none'; // Hide the details container
+    }
+
+    
+    // ------------------------------------------------ Modal shit starts here ------------------------------------------------ 
     // Handling issues function with modal
     function handleIssues() {
         let issues = [];
@@ -1022,7 +1051,8 @@
     function closeModal() {
         document.getElementById('myModal').style.display = "none";
     }  
-
+    
+    // ---------------------------------------- Vehicle Search Function ----------------------------------------
     // Vehicle search function
     document.getElementById('vehicleSearchInput').addEventListener('input', function() {
         const query = this.value.toLowerCase();
@@ -1034,36 +1064,39 @@
         resultDiv.innerHTML = '';
         detailsDiv.style.display = 'none';
 
-        for (const category in carDatabase) {
-            const vehicles = carDatabase[category]["vehicle"];
-            const maxSpeed = carDatabase[category]["maxSpeed"];
-            const classIdentifier = carDatabase[category]["classIdentifier"];
+        if (query.length > 0) {
+            for (let category in carDatabase) {
+                const vehicles = carDatabase[category]["vehicle"];
+                const maxSpeed = carDatabase[category]["maxSpeed"];
+                const classIdentifier = carDatabase[category]["classIdentifier"];
 
-            if (Array.isArray(vehicles)) {
-                vehicles.forEach(vehicleName => {
-                    if (vehicleName.toLowerCase().includes(query)) {
-                        if (!displayedVehicles[vehicleName] || maxSpeed > displayedVehicles[vehicleName].maxSpeed) {
-                            displayedVehicles[vehicleName] = {
-                                category,
-                                classIdentifier,
-                                maxSpeed
-                            };
+                if (Array.isArray(vehicles)) {
+                    vehicles.forEach(vehicleName => {
+                        if (vehicleName.toLowerCase().includes(query)) {
+                            if (!displayedVehicles[vehicleName] || maxSpeed > displayedVehicles[vehicleName].maxSpeed) {
+                                displayedVehicles[vehicleName] = {
+                                    category,
+                                    classIdentifier,
+                                    maxSpeed
+                                };
+                            }
+                            found = true;
                         }
-                        found = true;
-                    }
-                });
+                    });
+                }
             }
-        }
 
-        for (const vehicleName in displayedVehicles) {
-            const { category, classIdentifier, maxSpeed } = displayedVehicles[vehicleName];
-            const vehicleResult = document.createElement('div');
-            vehicleResult.className = 'result vehicle-result';
-            vehicleResult.textContent = `${vehicleName} (${classIdentifier}, Max Speed: ${maxSpeed} km/h)`;
-            vehicleResult.addEventListener('click', function() {
-                displayVehicleDetails(vehicleName, category, classIdentifier, maxSpeed);
-            });
-            resultDiv.appendChild(vehicleResult);
+            for (const vehicleName in displayedVehicles) {
+                const { category, classIdentifier, maxSpeed } = displayedVehicles[vehicleName];
+                const vehicleResult = document.createElement('div');
+                vehicleResult.className = 'result vehicle-result';
+                vehicleResult.textContent = `${vehicleName} (${classIdentifier}, Max Speed: ${maxSpeed} km/h)`;
+                vehicleResult.addEventListener('click', function() {
+                    displayVehicleDetails(vehicleName, category, classIdentifier, maxSpeed);
+                    hideVehicleSearch();  // Hide the vehicle search results when a vehicle is selected
+                });
+                resultDiv.appendChild(vehicleResult);
+            }
         }
 
         if (!found && query) {
@@ -1071,6 +1104,109 @@
         }
     });
 
+    // ----------------------------------------Category Search Functions ----------------------------------------
+    // Category search function
+    document.getElementById('vehicleSearchInput').addEventListener('input', function() {
+        const query = this.value.toLowerCase();
+        const resultDiv = document.getElementById('vehicleResult');
+        const detailsDiv = document.getElementById('vehicleDetails');
+        let found = false;
+        const displayedVehicles = {};
+
+        resultDiv.innerHTML = '';
+        detailsDiv.style.display = 'none';
+
+        if (query.length > 0) {
+            for (let category in carDatabase) {
+                const vehicles = carDatabase[category]["vehicle"];
+                const maxSpeed = carDatabase[category]["maxSpeed"];
+                const classIdentifier = carDatabase[category]["classIdentifier"];
+
+                if (Array.isArray(vehicles)) {
+                    vehicles.forEach(vehicleName => {
+                        if (vehicleName.toLowerCase().includes(query)) {
+                            if (!displayedVehicles[vehicleName] || maxSpeed > displayedVehicles[vehicleName].maxSpeed) {
+                                displayedVehicles[vehicleName] = {
+                                    category,
+                                    classIdentifier,
+                                    maxSpeed
+                                };
+                            }
+                            found = true;
+                        }
+                    });
+                }
+            }
+
+            for (const vehicleName in displayedVehicles) {
+                const { category, classIdentifier, maxSpeed } = displayedVehicles[vehicleName];
+                const vehicleResult = document.createElement('div');
+                vehicleResult.className = 'result vehicle-result';
+                vehicleResult.textContent = `${vehicleName} (${classIdentifier}, Max Speed: ${maxSpeed} km/h)`;
+                vehicleResult.addEventListener('click', function() {
+                    displayVehicleDetails(vehicleName, category, classIdentifier, maxSpeed);
+                    hideVehicleSearch();  // Hide the vehicle search results when a vehicle is selected
+                });
+                resultDiv.appendChild(vehicleResult);
+            }
+        }
+
+        if (!found && query) {
+            resultDiv.innerHTML = '<div class="no-result">No vehicles found</div>';
+        }
+    });
+
+    // Category search function
+    document.getElementById('categorySearchInput').addEventListener('input', function() {
+        const query = this.value.toLowerCase();
+        const resultDiv = document.getElementById('categoryResult');
+        const detailsDiv = document.getElementById('categoryDetails');
+        let found = false;
+
+        resultDiv.innerHTML = '';
+        detailsDiv.style.display = 'none';
+
+        if (query.length > 0) {
+            for (const category in carDatabase) {
+                const classIdentifier = carDatabase[category]["classIdentifier"].toLowerCase();
+
+                if (classIdentifier.includes(query)) {
+                    const categoryResult = document.createElement('div');
+                    categoryResult.className = 'result category-result';
+                    categoryResult.textContent = `Category: ${category} (Class: ${classIdentifier}, Max Speed: ${carDatabase[category].maxSpeed} km/h)`;
+                    categoryResult.addEventListener('click', function() {
+                        displayCategoryDetails(category);
+                        hideCategorySearch(); // Hide the category search results when a category is selected
+                    });
+                    resultDiv.appendChild(categoryResult);
+                    found = true;
+                    break; // Stop after finding the first match
+                }
+            }
+
+            if (!found && query) {
+                resultDiv.innerHTML = '<div class="no-result">No categories found</div>';
+            }
+        }
+    });
+
+    // ---------------------------------------- Hide Funcation ----------------------------------------
+    // Function to hide vehicle search results but keep the search bar active
+    function hideVehicleSearch() {
+        document.getElementById('vehicleResult').style.display = 'none';
+        document.getElementById('categoryResult').style.display = 'none';
+        document.getElementById('categoryDetails').style.display = 'none';
+    }
+
+    // Function to hide category search results but keep the search bar active
+    function hideCategorySearch() {
+        document.getElementById('categoryResult').style.display = 'none';
+        document.getElementById('vehicleResult').style.display = 'none';
+        document.getElementById('vehicleDetails').style.display = 'none';
+    }
+
+    // ---------------------------------------- Display Details ----------------------------------------
+    // Display vehicle details
     function displayVehicleDetails(vehicleName, category, classIdentifier, maxSpeed) {
         const detailsDiv = document.getElementById('vehicleDetails');
         detailsDiv.style.display = 'block';
@@ -1083,45 +1219,30 @@
         `;
     }
 
-    // Category search function using class identifier
-    document.getElementById('categorySearchInput').addEventListener('input', function() {
-        const query = this.value.toLowerCase();
-        const resultDiv = document.getElementById('categoryResult');
-        const detailsDiv = document.getElementById('categoryDetails');
-        resultDiv.innerHTML = '';
-        detailsDiv.style.display = 'none';
-
-        // Loop through categories to find matching class identifier
-        for (const category in carDatabase) {
-            const classIdentifier = carDatabase[category]["classIdentifier"].toLowerCase();
-            if (classIdentifier.includes(query)) {
-                const categoryResult = document.createElement('div');
-                categoryResult.className = 'result category-result';
-                categoryResult.textContent = `Category: ${category} (Class: ${classIdentifier}, Max Speed: ${carDatabase[category].maxSpeed} km/h)`;
-                categoryResult.addEventListener('click', function() {
-                    displayCategoryDetails(category);
-                });
-                resultDiv.appendChild(categoryResult);
-                break; // Stop after finding the first match
-            }
-        }
-
-        if (!resultDiv.innerHTML && query) {
-            resultDiv.innerHTML = '<div class="no-result">No categories found</div>';
-        }
-    });
-
+    // Display category details
     function displayCategoryDetails(categoryName) {
-        const category = carDatabase[categoryName];
+        const categoryData = carDatabase[categoryName];
         const detailsDiv = document.getElementById('categoryDetails');
         detailsDiv.style.display = 'block';
         detailsDiv.innerHTML = `
             <h2>Category Details</h2>
             <p><strong>Category:</strong> ${categoryName}</p>
-            <p><strong>Class Identifier:</strong> ${category.classIdentifier}</p>
-            <p><strong>Max Speed:</strong> ${category.maxSpeed} km/h</p>
+            <p><strong>Class Identifier:</strong> ${categoryData.classIdentifier}</p>
+            <p><strong>Max Speed:</strong> ${categoryData.maxSpeed} km/h</p>
         `;
     }
-    </script>
+   
+    // ---------------------------------------- Reset Function ----------------------------------------
+    // Reset search function (resets the search but keeps the search bars)
+    function resetSearch(inputId, resultId, detailsId) {
+        document.getElementById(inputId).value = '';
+        document.getElementById(resultId).innerHTML = '';
+        document.getElementById(detailsId).style.display = 'none';
+        document.getElementById(resultId).style.display = 'block'; // Ensure results container is visible
+        }
+
+    // ------------------------------------------------ End of script ------------------------------------------------ 
+</script>
+
 </body>
 </html>
